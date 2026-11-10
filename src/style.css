@@ -1,0 +1,29 @@
+:root {
+  color-scheme: dark;
+  --bg: #0b1020;
+  --fg: #e6f7ff;
+  --akzent: #38e1ff;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: system-ui, sans-serif;
+  min-height: 100dvh;
+}
+
+.start {
+  padding: 16px;
+  text-align: center;
+}
+
+button {
+  font: inherit;
+  padding: 12px 20px;
+  border: 2px solid var(--akzent);
+  background: transparent;
+  color: var(--akzent);
+  border-radius: 8px;
+  cursor: pointer;
+}
