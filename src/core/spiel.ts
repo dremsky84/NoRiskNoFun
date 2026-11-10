@@ -16,6 +16,8 @@ import type {
 
 export type { Phase } from './types';
 
+export const MISSION_AB_RUNDE = 4;
+
 const REIHENFOLGE: readonly Phase[] = ['verstaerken', 'angreifen', 'verschieben'];
 
 /** Gibt die nächste Phase zurück. Nach 'verschieben' beginnt die nächste Runde wieder bei 'verstaerken'. */
@@ -86,15 +88,24 @@ export function missionText(z: Spielzustand, spielerId: number): string {
   return `Kontrolliere ${namen}`;
 }
 
-function missionFuer(karte: Karte, rng: Rng): Mission {
+/**
+ * Missionsziel für einen Spieler. Das Ziel liegt immer deutlich über dem Startbesitz,
+ * damit keine Partie schon in der ersten Runde endet.
+ */
+function missionFuer(karte: Karte, rng: Rng, besitz: number[], spielerId: number): Mission {
+  const n = karte.gebiete.length;
+  const eigeneStart = besitz.filter((b) => b === spielerId).length;
   if (rng() < 0.5 && karte.kontinente.length >= 2) {
     const [a, b] = mische(
       karte.kontinente.map((k) => k.id),
       rng,
     );
-    return { art: 'kontinente', kontinente: [a, b] };
+    const gebiete = [...karte.kontinente[a].gebiete, ...karte.kontinente[b].gebiete];
+    const schonGehalten = gebiete.filter((id) => besitz[id] === spielerId).length;
+    if (schonGehalten < gebiete.length - 3) return { art: 'kontinente', kontinente: [a, b] };
   }
-  return { art: 'gebiete', anzahl: Math.ceil(karte.gebiete.length * 0.4) };
+  const anzahl = Math.min(n, Math.max(Math.ceil(n * 0.5), eigeneStart + 5));
+  return { art: 'gebiete', anzahl };
 }
 
 function protokoll(z: Spielzustand, text: string): void {
@@ -114,7 +125,8 @@ function pruefeSieg(z: Spielzustand): void {
     siegErklaeren(z, lebende[0].id, 'Alle Gegner ausgeschieden');
     return;
   }
-  if (missionErfuellt(z, z.aktiver)) siegErklaeren(z, z.aktiver, 'Mission erfüllt');
+  // Missionen zählen erst ab Runde 4, damit eine Partie nicht früh endet.
+  if (z.runde >= MISSION_AB_RUNDE && missionErfuellt(z, z.aktiver)) siegErklaeren(z, z.aktiver, 'Mission erfüllt');
 }
 
 export function neuesSpiel(
@@ -131,7 +143,7 @@ export function neuesSpiel(
       ki: false,
       charakter: 'mensch',
       farbe: SPIELER_FARBE,
-      mission: missionFuer(karte, rng),
+      mission: { art: 'gebiete', anzahl: 0 },
       lebt: true,
     },
   ];
@@ -142,7 +154,7 @@ export function neuesSpiel(
       ki: true,
       charakter: KI_PROFILE[i - 1].charakter,
       farbe: KI_FARBEN[i - 1],
-      mission: missionFuer(karte, rng),
+      mission: { art: 'gebiete', anzahl: 0 },
       lebt: true,
     });
   }
@@ -166,6 +178,8 @@ export function neuesSpiel(
       rest--;
     }
   }
+
+  for (const s of spieler) s.mission = missionFuer(karte, rng, besitz, s.id);
 
   const z: Spielzustand = {
     karte,

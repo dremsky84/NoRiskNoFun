@@ -108,7 +108,7 @@ function renderStart(): string {
           <li><b>Angreifen:</b> Würfelkampf wie bei Risiko. Die Siegchance siehst du vor jeder Schlacht.</li>
           <li><b>Verschieben:</b> Einmal pro Zug Truppen über eigene, verbundene Gebiete bewegen.</li>
           <li><b>Meer und Gebirge:</b> Unbetretbar. Gebiete sind nur über Landgrenzen oder gestrichelte Seewege erreichbar.</li>
-          <li><b>Sieg:</b> Alle Gegner ausschalten oder deine Missionskarte erfüllen.</li>
+          <li><b>Sieg:</b> Alle Gegner ausschalten oder deine Missionskarte erfüllen. Missionen zählen ab Runde 4.</li>
         </ul>
       </details>
     </main>`;
