@@ -1,0 +1,53 @@
+# Arbeitstitel: Konzept
+
+Stand: 10.11.2026. Konzept für den Prototyp, ohne Code.
+
+## Spielidee
+
+Ein futuristisches Eroberungsspiel nach dem Vorbild von Risiko. Die Welt ist in Gebiete und Kontinente aufgeteilt. Du stationierst Truppen, greifst Nachbargebiete an und kontrollierst ganze Kontinente. Ziel ist die Weltherrschaft oder das Erfüllen einer Missionskarte.
+
+Eine Partie dauert etwa 20 Minuten, rundenbasiert.
+
+## Spielmodi
+
+- **Solo gegen KI (Hauptmodus):** 2 bis 3 KI-Gegner. Drei Schwierigkeitsstufen.
+- **WLAN-Multiplayer (Phase 2):** 2 bis 4 Spieler im selben WLAN, jeder mit eigenem Gerät. Ohne Server, per WebRTC. Der Verbindungsaufbau erfolgt über QR-Code oder kopierten Text. Kein Internet nötig.
+  - Funktioniert nicht in Gäste-WLANs mit Geräte-Isolation.
+- **Hot-Seat (Fallback):** Mehrere Spieler an einem Gerät, falls die WLAN-Verbindung nicht zuverlässig klappt.
+
+## Karten
+
+- **Drei handgebaute Karten**, je etwa 20 bis 24 Gebiete in 4 Kontinenten.
+- **Zufallskarte:** Wird aus festen Regeln erzeugt (Anzahl Gebiete, Kontinente). Die Nachbarschaft ist garantiert zusammenhängend.
+
+## Regeln
+
+- **Ablauf pro Runde:** Verstärken, Angreifen, Verschieben (wie bei Risiko).
+- **Würfelkampf wie bei Risiko:** Angreifer würfelt mit bis zu 3 Würfeln, Verteidiger mit bis zu 2. Die höchsten Würfel werden verglichen, Gleichstand geht an den Verteidiger.
+- **Kontinent-Boni:** Wer einen ganzen Kontinent hält, bekommt zusätzliche Truppen pro Runde.
+- **Missionskarten:** Alternative Siegbedingung neben der vollständigen Eroberung.
+
+## Stärken von Risiko, intensiviert
+
+- **Klare Risikoabwägung:** Vor jedem Angriff wird die Erfolgswahrscheinlichkeit angezeigt (abschaltbar).
+- **Engpässe:** Karten werden so gebaut, dass Kontinente über wenige Verbindungen erreichbar sind. Dort entstehen die spannenden Kämpfe.
+- **Sichtbare Bedrohung:** Truppenstärken und Grenzen sind jederzeit lesbar.
+- **Kurze Züge:** Schnelle Würfelanimation, keine langen Wartezeiten.
+- **KI mit Charakter:** Angreifer (riskiert viel), Verteidiger (hält Gebiete), Expansionist (greift schwache Nachbarn an).
+
+## Technik und Veröffentlichung
+
+Wie bei Gildenstadt:
+- Vite und TypeScript, Tests mit Vitest.
+- Veröffentlichung über GitHub Pages mit Workflow bei Push auf `main`.
+- `base: './'`, PWA-Manifest, Service Worker, Hochformat.
+- Eigenes Repo, nicht im Projekt `Project1`.
+
+Architektur-Hinweis: Die Spiellogik wird als reine TypeScript-Module ohne Darstellung gebaut. So kann der WLAN-Modus später die Zustände zwischen den Geräten synchronisieren, ohne die Regeln neu zu schreiben.
+
+## Offene Punkte
+
+- Arbeitstitel und Repo-Name.
+- Anzahl KI-Gegner im Solo-Modus (2 oder 3).
+- Sollen Risiko-Karten (Gebietskarten für Verstärkung) eingeführt werden?
+- WLAN-Verbindung auf echten Geräten testen (Android, iOS, Gäste-WLAN).
