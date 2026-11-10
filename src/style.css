@@ -1,29 +1,522 @@
 :root {
   color-scheme: dark;
-  --bg: #0b1020;
+  --bg: #060a16;
   --fg: #e6f7ff;
   --akzent: #38e1ff;
+  --warn: #ffb020;
+  --rand: rgba(56, 225, 255, 0.28);
+  --panel: rgba(10, 17, 36, 0.85);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
 }
 
 body {
-  margin: 0;
-  background: var(--bg);
+  background:
+    radial-gradient(ellipse at 50% -10%, #1b2a55 0%, transparent 60%),
+    var(--bg);
   color: var(--fg);
-  font-family: system-ui, sans-serif;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#app {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 12px 16px 28px;
   min-height: 100dvh;
 }
 
-.start {
-  padding: 16px;
-  text-align: center;
+h1,
+h2 {
+  margin: 0;
 }
 
 button {
   font: inherit;
-  padding: 12px 20px;
-  border: 2px solid var(--akzent);
-  background: transparent;
   color: var(--akzent);
-  border-radius: 8px;
+  background: rgba(56, 225, 255, 0.06);
+  border: 1.5px solid var(--akzent);
+  border-radius: 10px;
+  padding: 10px 16px;
   cursor: pointer;
+  box-shadow: 0 0 12px rgba(56, 225, 255, 0.15);
+  transition: transform 0.1s, box-shadow 0.2s, background 0.2s;
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+button.primaer {
+  background: var(--akzent);
+  color: #04121c;
+  font-weight: 700;
+  box-shadow: 0 0 18px rgba(56, 225, 255, 0.45);
+}
+
+button.gross {
+  width: 100%;
+  padding: 16px;
+  font-size: 1.15rem;
+  margin-top: 8px;
+}
+
+/* ---------- Startbildschirm ---------- */
+
+.logo {
+  text-align: center;
+  padding: 24px 0 4px;
+}
+
+.logo h1 {
+  font-size: clamp(2.1rem, 9vw, 3.4rem);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-shadow: 0 0 18px rgba(56, 225, 255, 0.6);
+}
+
+.logo h1 span {
+  display: block;
+  color: var(--warn);
+  font-size: 0.5em;
+  letter-spacing: 0.35em;
+  margin-top: 6px;
+  text-shadow: 0 0 14px rgba(255, 176, 32, 0.6);
+}
+
+.logo p {
+  opacity: 0.7;
+  margin: 10px 0 0;
+}
+
+section {
+  margin: 20px 0;
+}
+
+section h2 {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  opacity: 0.6;
+  margin-bottom: 10px;
+}
+
+.optionen {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+}
+
+.optionen button {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px;
+}
+
+.optionen button small {
+  opacity: 0.7;
+  font-size: 0.8rem;
+  color: var(--fg);
+}
+
+.optionen button.an,
+.reihe button.an {
+  background: var(--akzent);
+  color: #04121c;
+  font-weight: 700;
+}
+
+.optionen button.an small {
+  color: #04121c;
+}
+
+.reihe {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.regeln {
+  margin-top: 18px;
+  font-size: 0.92rem;
+  opacity: 0.9;
+}
+
+.regeln summary {
+  cursor: pointer;
+  color: var(--akzent);
+}
+
+.regeln li {
+  margin: 6px 0;
+}
+
+/* ---------- Spiel ---------- */
+
+.kopf {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.titel {
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.95rem;
+  color: var(--akzent);
+  text-shadow: 0 0 10px rgba(56, 225, 255, 0.5);
+}
+
+.chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  border: 1px solid var(--farbe);
+  border-radius: 10px;
+  padding: 4px 9px;
+  font-size: 0.74rem;
+  background: rgba(10, 17, 36, 0.8);
+  min-width: 96px;
+}
+
+.chip b {
+  color: var(--farbe);
+  display: block;
+}
+
+.chip small {
+  opacity: 0.7;
+}
+
+.chip.aktiv {
+  box-shadow: 0 0 14px var(--farbe);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.chip.tot {
+  opacity: 0.35;
+  text-decoration: line-through;
+}
+
+.ziel {
+  font-size: 0.86rem;
+  margin: 10px 0;
+  opacity: 0.85;
+}
+
+.karte-wrap {
+  background: var(--panel);
+  border: 1px solid var(--rand);
+  border-radius: 18px;
+  padding: 6px;
+  box-shadow:
+    0 0 40px rgba(56, 225, 255, 0.12),
+    inset 0 0 30px rgba(56, 225, 255, 0.05);
+}
+
+svg.karte {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 66vh;
+  border-radius: 14px;
+}
+
+.gebiet {
+  cursor: pointer;
+}
+
+.gebiet polygon {
+  stroke: #060a16;
+  stroke-width: 8;
+  stroke-linejoin: round;
+  transition: stroke 0.2s;
+}
+
+.gebiet.quelle polygon {
+  stroke: rgba(255, 255, 255, 0.45);
+}
+
+.gebiet.ziel polygon {
+  stroke: var(--warn);
+  stroke-width: 12;
+  stroke-dasharray: 26 14;
+  animation: fluss 1.1s linear infinite;
+}
+
+.gebiet.auswahl polygon {
+  stroke: #ffffff;
+  stroke-width: 12;
+  filter: url(#glow);
+}
+
+@keyframes fluss {
+  to {
+    stroke-dashoffset: -80;
+  }
+}
+
+.gname {
+  font: 600 25px system-ui, sans-serif;
+  fill: var(--fg);
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: #060a16;
+  stroke-width: 7px;
+  pointer-events: none;
+}
+
+.marke {
+  fill: rgba(6, 10, 22, 0.88);
+  stroke-width: 6;
+  pointer-events: none;
+}
+
+.anzahl {
+  font: 700 34px system-ui, sans-serif;
+  fill: #ffffff;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+.kontinente {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.kontinent {
+  font-size: 0.74rem;
+  letter-spacing: 0.04em;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--farbe);
+  color: var(--farbe);
+}
+
+.angriffslinie {
+  stroke: var(--warn);
+  stroke-width: 12;
+  stroke-linecap: round;
+  stroke-dasharray: 12 16;
+  opacity: 0.9;
+  filter: url(#glow);
+  pointer-events: none;
+  animation: fluss 0.5s linear infinite;
+}
+
+.info {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hinweis {
+  margin: 0;
+  font-size: 0.95rem;
+  min-height: 1.4em;
+}
+
+.knoepfe {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.knoepfe button {
+  flex: 1;
+  min-width: 110px;
+}
+
+.protokoll {
+  margin: 12px 0 0;
+  padding: 8px 12px 8px 28px;
+  font-size: 0.8rem;
+  opacity: 0.8;
+  background: rgba(10, 17, 36, 0.7);
+  border: 1px solid rgba(56, 225, 255, 0.12);
+  border-radius: 12px;
+}
+
+.protokoll li {
+  margin: 3px 0;
+}
+
+/* ---------- Dialoge ---------- */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(3, 6, 14, 0.7);
+  backdrop-filter: blur(4px);
+  animation: ein 0.25s ease-out;
+}
+
+.modal-karte {
+  width: min(560px, 100%);
+  max-height: 92dvh;
+  overflow-y: auto;
+  background: linear-gradient(180deg, #111c38, #0a1124);
+  border: 1px solid var(--rand);
+  border-radius: 22px 22px 0 0;
+  padding: 18px 18px 24px;
+  box-shadow: 0 -10px 40px rgba(56, 225, 255, 0.2);
+}
+
+@media (min-width: 700px) {
+  .modal {
+    align-items: center;
+  }
+  .modal-karte {
+    border-radius: 22px;
+  }
+}
+
+@keyframes ein {
+  from {
+    opacity: 0;
+  }
+}
+
+.modal-karte h2 {
+  font-size: 1.25rem;
+  margin-bottom: 6px;
+}
+
+.modal-karte h2.sieg {
+  color: var(--warn);
+  text-shadow: 0 0 16px rgba(255, 176, 32, 0.6);
+}
+
+.modal-karte h2.niederlage {
+  color: #ff4d9d;
+}
+
+.zahlen,
+.ausgang {
+  opacity: 0.8;
+  margin: 4px 0 10px;
+}
+
+.chance {
+  height: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 6px 0;
+}
+
+.chance span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--warn), var(--akzent));
+  transition: width 0.4s;
+}
+
+.modal-karte input[type='range'] {
+  width: 100%;
+  accent-color: var(--akzent);
+  margin: 10px 0;
+}
+
+.wert {
+  margin: 0 0 12px;
+}
+
+/* ---------- Würfel ---------- */
+
+.wuerfelreihe {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin: 10px 0;
+}
+
+.wuerfel {
+  width: 58px;
+  height: 58px;
+  padding: 8px;
+  border-radius: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  background: #f5f7ff;
+  box-shadow:
+    inset 0 -4px 0 rgba(0, 0, 0, 0.2),
+    0 0 16px rgba(255, 255, 255, 0.12);
+  animation: wirf 0.6s ease-out both;
+}
+
+.wuerfelreihe.angriff .wuerfel {
+  background: #ffe2b8;
+}
+
+.wuerfelreihe.verteidigung .wuerfel {
+  background: #bfefff;
+}
+
+.wuerfel span {
+  align-self: center;
+  justify-self: center;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.wuerfel span.an {
+  background: #0a1124;
+}
+
+@keyframes wirf {
+  0% {
+    transform: rotate(-260deg) scale(0.3);
+    opacity: 0;
+  }
+  60% {
+    transform: rotate(14deg) scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

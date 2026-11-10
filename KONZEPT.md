@@ -45,9 +45,18 @@ Wie bei Gildenstadt:
 
 Architektur-Hinweis: Die Spiellogik wird als reine TypeScript-Module ohne Darstellung gebaut. So kann der WLAN-Modus später die Zustände zwischen den Geräten synchronisieren, ohne die Regeln neu zu schreiben.
 
+## Entscheidungen für den Prototyp (Stand 10.11.2026)
+
+- **KI-Gegner:** 2 oder 3 wählbar, Standard ist 2. Die Charaktere heißen Angreifer, Verteidiger und Expansionist.
+- **Karten:** Drei handgebaute Karten mit je 20 Gebieten in 4 Kontinenten, dazu eine Zufallskarte.
+- **Risiko-Karten:** Nicht enthalten. Verstärkung kommt nur aus Gebieten und Kontinent-Boni.
+- **Missionen:** Jeder Spieler erhält zufällig entweder zwei Kontinente oder 40 % der Gebiete als Ziel.
+- **Verschieben:** Einmal pro Zug, nur über verbundene eigene Gebiete, mindestens eine Truppe bleibt zurück.
+- **Kein Zeitlimit.** Die Partie endet mit Sieg, Missionserfüllung oder Ausscheiden aller Gegner.
+- **Nicht im Prototyp:** WLAN-Multiplayer und Hot-Seat (beide Phase 2).
+
 ## Offene Punkte
 
 - Arbeitstitel und Repo-Name.
-- Anzahl KI-Gegner im Solo-Modus (2 oder 3).
-- Sollen Risiko-Karten (Gebietskarten für Verstärkung) eingeführt werden?
-- WLAN-Verbindung auf echten Geräten testen (Android, iOS, Gäste-WLAN).
+- WLAN-Verbindung auf echten Geräten testen (Android, iOS, Gäste-WLAN), sobald Phase 2 beginnt.
+- Balancing der KI-Schwellen und Startvorräte nach ersten echten Partien.
