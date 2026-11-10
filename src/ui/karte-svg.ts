@@ -1,4 +1,4 @@
-import type { Spielzustand } from '../core/types';
+import type { Feld, Spielzustand } from '../core/types';
 
 export interface KarteAnsicht {
   auswahl: number | null;
@@ -6,7 +6,21 @@ export interface KarteAnsicht {
   ziele: number[];
 }
 
-/** Zeichnet die Karte als SVG. Felder tragen data-id, damit Klicks zugeordnet werden können. */
+const punkteText = (polygon: [number, number][]) =>
+  polygon.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
+
+/** Ozean: Wasserfläche mit Wellenmuster. Gebirge: Felsfläche mit zwei Gipfeln. */
+function feldSvg(f: Feld): string {
+  const punkte = punkteText(f.polygon);
+  if (f.typ === 'ozean') {
+    return `<g class="feld"><polygon points="${punkte}" fill="url(#meer)"/><polygon points="${punkte}" fill="url(#wellen)"/></g>`;
+  }
+  const [cx, cy] = f.zentrum;
+  const gipfel = `M${cx - 52} ${cy + 34} L${cx - 20} ${cy - 16} L${cx - 4} ${cy + 8} L${cx + 14} ${cy - 30} L${cx + 52} ${cy + 34} Z`;
+  return `<g class="feld"><polygon points="${punkte}" fill="url(#berg)"/><path class="gipfel" d="${gipfel}"/></g>`;
+}
+
+/** Zeichnet die Karte als SVG. Nur Gebiete tragen data-id, damit Klicks zugeordnet werden. */
 export function renderKarte(z: Spielzustand, ansicht: KarteAnsicht): string {
   const verlaufsFarben = z.spieler
     .map(
@@ -18,6 +32,16 @@ export function renderKarte(z: Spielzustand, ansicht: KarteAnsicht): string {
     )
     .join('');
 
+  const felder = z.karte.felder.map(feldSvg).join('');
+
+  const seewege = z.karte.seewege
+    .map(([a, b]) => {
+      const [x1, y1] = z.karte.gebiete[a].zentrum;
+      const [x2, y2] = z.karte.gebiete[b].zentrum;
+      return `<line class="seeweg" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;
+    })
+    .join('');
+
   const gebiete = z.karte.gebiete
     .map((g) => {
       const besitzer = z.besitz[g.id];
@@ -26,11 +50,10 @@ export function renderKarte(z: Spielzustand, ansicht: KarteAnsicht): string {
       if (ansicht.auswahl === g.id) klassen.push('auswahl');
       if (ansicht.quellen.includes(g.id)) klassen.push('quelle');
       if (ansicht.ziele.includes(g.id)) klassen.push('ziel');
-      const punkte = g.polygon.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
       const [cx, cy] = g.zentrum;
       return `
       <g class="${klassen.join(' ')}" data-id="${g.id}">
-        <polygon points="${punkte}" fill="url(#f${besitzer})"/>
+        <polygon points="${punkteText(g.polygon)}" fill="url(#f${besitzer})"/>
         <text class="gname" x="${cx}" y="${cy - 66}">${g.name}</text>
         <circle class="marke" cx="${cx}" cy="${cy}" r="40" style="stroke:${farbe}"/>
         <text class="anzahl" x="${cx}" y="${cy + 13}">${z.truppen[g.id]}</text>
@@ -51,16 +74,25 @@ export function renderKarte(z: Spielzustand, ansicht: KarteAnsicht): string {
   <svg class="karte" viewBox="0 0 1000 1000" role="img" aria-label="Spielkarte ${z.karte.name}">
     <defs>
       ${verlaufsFarben}
+      <radialGradient id="meer" cx="50%" cy="50%" r="80%">
+        <stop offset="0%" stop-color="#1d5a94"/>
+        <stop offset="100%" stop-color="#0b2a4f"/>
+      </radialGradient>
+      <radialGradient id="berg" cx="50%" cy="40%" r="75%">
+        <stop offset="0%" stop-color="#5d5448"/>
+        <stop offset="100%" stop-color="#2a2521"/>
+      </radialGradient>
+      <pattern id="wellen" width="60" height="30" patternUnits="userSpaceOnUse">
+        <path d="M0 15 Q15 5 30 15 T60 15" fill="none" stroke="rgba(160,220,255,0.18)" stroke-width="2"/>
+      </pattern>
       <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
         <feGaussianBlur stdDeviation="8" result="blur"/>
         <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
       </filter>
-      <pattern id="raster" width="50" height="50" patternUnits="userSpaceOnUse">
-        <path d="M50 0H0V50" fill="none" stroke="rgba(56,225,255,0.08)" stroke-width="1"/>
-      </pattern>
     </defs>
-    <rect width="1000" height="1000" fill="#060a16"/>
-    <rect width="1000" height="1000" fill="url(#raster)"/>
+    <rect width="1000" height="1000" fill="#0b2a4f"/>
+    ${felder}
+    ${seewege}
     ${gebiete}
     ${linie}
   </svg>`;

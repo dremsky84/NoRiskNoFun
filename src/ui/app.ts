@@ -40,9 +40,9 @@ interface Ui {
 }
 
 const KARTENWAHL = [
-  { id: 'orbitalring', name: 'Orbitalring', beschreibung: 'Vier Kontinente im Quadrat' },
-  { id: 'kristallbucht', name: 'Kristallbucht', beschreibung: 'Küstenbänder entlang der Diagonale' },
-  { id: 'titanenkette', name: 'Titanenkette', beschreibung: 'Zwei Gebirgsreihen, enge Pässe' },
+  { id: 'archipel', name: 'Archipel', beschreibung: 'Festland und Inseln, getrennt durch Meer' },
+  { id: 'gebirgsbogen', name: 'Gebirgsbogen', beschreibung: 'Ein Gebirgskamm teilt die Welt' },
+  { id: 'dreifachmeer', name: 'Dreifachmeer', beschreibung: 'Drei Meere, viele Seewege' },
   { id: 'zufall', name: 'Zufallskarte', beschreibung: 'Jede Partie eine neue Welt' },
 ];
 
@@ -53,7 +53,7 @@ const SCHWIERIGKEITEN: { id: Schwierigkeit; name: string }[] = [
 ];
 
 const ui: Ui = {
-  karte: 'orbitalring',
+  karte: 'archipel',
   anzahlKi: 2,
   schwierigkeit: 'geselle',
   z: null,
@@ -107,6 +107,7 @@ function renderStart(): string {
           <li><b>Verstärken:</b> Neue Truppen je nach Gebieten und vollständig gehaltenen Kontinenten.</li>
           <li><b>Angreifen:</b> Würfelkampf wie bei Risiko. Die Siegchance siehst du vor jeder Schlacht.</li>
           <li><b>Verschieben:</b> Einmal pro Zug Truppen über eigene, verbundene Gebiete bewegen.</li>
+          <li><b>Meer und Gebirge:</b> Unbetretbar. Gebiete sind nur über Landgrenzen oder gestrichelte Seewege erreichbar.</li>
           <li><b>Sieg:</b> Alle Gegner ausschalten oder deine Missionskarte erfüllen.</li>
         </ul>
       </details>

@@ -13,7 +13,7 @@ import {
   verstaerkungFuer,
 } from './spiel';
 import { mulberry32 } from './rng';
-import { ORBITALRING } from './vordefiniert';
+import { ARCHIPEL } from './vordefiniert';
 import type { Spielzustand } from './types';
 
 function spielStart(seed: number, anzahlKi = 2): Spielzustand {
@@ -151,7 +151,7 @@ describe('KI', () => {
   it('spielt Züge ohne Regelverletzung und hält die Invarianten', () => {
     for (let seed = 20; seed < 26; seed++) {
       const rng = mulberry32(seed);
-      const karte = baueKarte(ORBITALRING);
+      const karte = baueKarte(ARCHIPEL);
       const z = neuesSpiel(karte, 3, seed % 2 === 0 ? 'meister' : 'lehrling', rng);
       let schritte = 0;
       while (z.sieger === null && schritte < 400) {

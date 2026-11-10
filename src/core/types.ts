@@ -19,10 +19,20 @@ export interface Kontinent {
   gebiete: number[];
 }
 
+/** Unbetretbare Fläche: Ozean oder Gebirge. Trennt Gebiete, ist aber kein Gebiet. */
+export interface Feld {
+  typ: 'ozean' | 'gebirge';
+  zentrum: Punkt;
+  polygon: Punkt[];
+}
+
 export interface Karte {
   name: string;
   gebiete: Gebiet[];
   kontinente: Kontinent[];
+  felder: Feld[];
+  /** Seewege zwischen Gebieten, die nicht über eine Landgrenze verbunden sind. */
+  seewege: [number, number][];
 }
 
 export type Mission =

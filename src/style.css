@@ -249,6 +249,29 @@ svg.karte {
   cursor: pointer;
 }
 
+.feld polygon {
+  stroke: #0a1a30;
+  stroke-width: 8;
+  stroke-linejoin: round;
+}
+
+.gipfel {
+  fill: #d8d0c0;
+  opacity: 0.85;
+  stroke: #1a1612;
+  stroke-width: 3;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.seeweg {
+  stroke: rgba(150, 230, 255, 0.6);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-dasharray: 4 14;
+  pointer-events: none;
+}
+
 .gebiet polygon {
   stroke: #060a16;
   stroke-width: 8;
