@@ -62,3 +62,15 @@ describe('Zufallskarte', () => {
     }
   });
 });
+
+describe('große Zufallskarten', () => {
+  it('mittel und groß sind zusammenhängend mit den richtigen Gebietsanzahlen', () => {
+    for (const anzahl of [32, 44]) {
+      for (let seed = 1; seed <= 4; seed++) {
+        const karte = baueKarte(zufallsDefinition(mulberry32(seed), anzahl));
+        expect(karte.gebiete.length).toBe(anzahl);
+        pruefeKarte(karte);
+      }
+    }
+  });
+});

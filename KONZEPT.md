@@ -50,9 +50,12 @@ Architektur-Hinweis: Die Spiellogik wird als reine TypeScript-Module ohne Darste
 - **KI-Gegner:** 2 oder 3 wählbar, Standard ist 2. Die Charaktere heißen Angreifer, Verteidiger und Expansionist.
 - **Karten:** Drei handgebaute Karten mit je 20 Gebieten in 4 Kontinenten, dazu eine Zufallskarte.
 - **Risiko-Karten:** Nicht enthalten. Verstärkung kommt nur aus Gebieten und Kontinent-Boni.
-- **Missionen:** Jeder Spieler erhält zufällig entweder zwei Kontinente oder 40 % der Gebiete als Ziel.
+- **Missionen:** Jeder Spieler erhält zufällig entweder zwei Kontinente oder mindestens die Hälfte der Gebiete als Ziel.
 - **Verschieben:** Einmal pro Zug, nur über verbundene eigene Gebiete, mindestens eine Truppe bleibt zurück.
 - **Kein Zeitlimit.** Die Partie endet mit Sieg, Missionserfüllung oder Ausscheiden aller Gegner.
+- **Kartengröße:** Die Zufallskarte gibt es in drei Größen: klein (20 Gebiete), mittel (32) und groß (44). Startvorrat und Kontinente wachsen mit. Die handgebauten Karten sind bisher alle klein.
+- **Startaufstellung:** Wahlweise automatisch oder selbst platziert. Bei der Selbstaufstellung setzt der Mensch seine Startruppen Klick für Klick, die KI verteilt automatisch.
+- **Missionen:** Ziel mindestens 5 Gebiete über dem Startbesitz. Missionen zählen erst ab Runde 4.
 - **Nicht im Prototyp:** WLAN-Multiplayer und Hot-Seat (beide Phase 2).
 
 ## Offene Punkte

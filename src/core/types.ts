@@ -78,6 +78,8 @@ export interface Spielzustand {
   verschoben: boolean;
   eroberung: AusstehendeEroberung | null;
   letzterAngriff: Gefecht | null;
+  /** Noch zu platzierende Truppen des Menschen vor Spielbeginn (freie Aufstellung). 0 = keine Aufstellung. */
+  aufstellung: number;
   schwierigkeit: Schwierigkeit;
   sieger: number | null;
   siegGrund: string;

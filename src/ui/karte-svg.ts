@@ -42,6 +42,8 @@ export function renderKarte(z: Spielzustand, ansicht: KarteAnsicht): string {
     })
     .join('');
 
+  // Skalierung: 1 bei 20 Gebieten, kleiner bei größeren Karten (mindestens 0,55).
+  const skala = Math.max(0.55, Math.min(1, Math.sqrt(20 / z.karte.gebiete.length))).toFixed(3);
   const gebiete = z.karte.gebiete
     .map((g) => {
       const besitzer = z.besitz[g.id];
@@ -51,12 +53,15 @@ export function renderKarte(z: Spielzustand, ansicht: KarteAnsicht): string {
       if (ansicht.quellen.includes(g.id)) klassen.push('quelle');
       if (ansicht.ziele.includes(g.id)) klassen.push('ziel');
       const [cx, cy] = g.zentrum;
+      // Auf großen Karten schrumpfen Beschriftung und Marken, damit sie nicht überlappen.
       return `
       <g class="${klassen.join(' ')}" data-id="${g.id}">
         <polygon points="${punkteText(g.polygon)}" fill="url(#f${besitzer})"/>
-        <text class="gname" x="${cx}" y="${cy - 66}">${g.name}</text>
-        <circle class="marke" cx="${cx}" cy="${cy}" r="40" style="stroke:${farbe}"/>
-        <text class="anzahl" x="${cx}" y="${cy + 13}">${z.truppen[g.id]}</text>
+        <g transform="translate(${cx} ${cy}) scale(${skala})">
+          <text class="gname" x="0" y="-66">${g.name}</text>
+          <circle class="marke" cx="0" cy="0" r="40" style="stroke:${farbe}"/>
+          <text class="anzahl" x="0" y="13">${z.truppen[g.id]}</text>
+        </g>
       </g>`;
     })
     .join('');

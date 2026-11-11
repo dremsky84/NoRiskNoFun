@@ -129,11 +129,17 @@ function pruefeSieg(z: Spielzustand): void {
   if (z.runde >= MISSION_AB_RUNDE && missionErfuellt(z, z.aktiver)) siegErklaeren(z, z.aktiver, 'Mission erfüllt');
 }
 
+export interface SpielOptionen {
+  /** Der Mensch verteilt seine StartTruppen selbst statt zufällig. */
+  freieAufstellung?: boolean;
+}
+
 export function neuesSpiel(
   karte: Karte,
   anzahlKi: number,
   schwierigkeit: Schwierigkeit,
   rng: Rng,
+  optionen: SpielOptionen = {},
 ): Spielzustand {
   const anzahl = Math.min(4, Math.max(2, anzahlKi + 1));
   const spieler: Spieler[] = [
@@ -169,10 +175,17 @@ export function neuesSpiel(
   ).forEach((gid, i) => {
     besitz[gid] = i % anzahl;
   });
-  const vorrat = 35 - 5 * (anzahl - 2);
+  // Startvorrat wächst mit der Kartengröße, damit die Dichte gleich bleibt.
+  const vorrat = Math.round((35 - 5 * (anzahl - 2)) * (n / 20));
+  let aufstellung = 0;
   for (let s = 0; s < anzahl; s++) {
     const eigene = karte.gebiete.filter((g) => besitz[g.id] === s).map((g) => g.id);
     let rest = vorrat - eigene.length;
+    if (s === 0 && optionen.freieAufstellung) {
+      // Der Mensch platziert den Rest selbst.
+      aufstellung = rest;
+      continue;
+    }
     while (rest > 0) {
       truppen[eigene[Math.floor(rng() * eigene.length)]]++;
       rest--;
@@ -193,13 +206,35 @@ export function neuesSpiel(
     verschoben: false,
     eroberung: null,
     letzterAngriff: null,
+    aufstellung,
     schwierigkeit,
     sieger: null,
     siegGrund: '',
     protokoll: ['Die Partie beginnt. Verstärke zuerst deine Front.'],
   };
-  z.verstaerkung = verstaerkungFuer(z, 0);
+  // Mit freier Aufstellung beginnt die erste Verstärkung erst, wenn alle Truppen gesetzt sind.
+  z.verstaerkung = aufstellung > 0 ? 0 : verstaerkungFuer(z, 0);
   return z;
+}
+
+/** Freie Aufstellung: setzt eine Startruppe des Menschen auf eigenes Gebiet. */
+export function setzeAufstellung(z: Spielzustand, gebiet: number): boolean {
+  if (z.aufstellung <= 0 || z.sieger !== null || z.besitz[gebiet] !== 0) return false;
+  z.truppen[gebiet]++;
+  z.aufstellung--;
+  if (z.aufstellung === 0) {
+    z.verstaerkung = verstaerkungFuer(z, 0);
+    protokoll(z, 'Aufstellung abgeschlossen. Runde 1 beginnt.');
+  }
+  return true;
+}
+
+/** Verteilt die restlichen Startruppen zufällig auf die eigenen Gebiete. */
+export function aufstellungAutomatisch(z: Spielzustand, rng: Rng): void {
+  const eigene = z.karte.gebiete.filter((g) => z.besitz[g.id] === 0).map((g) => g.id);
+  while (z.aufstellung > 0) {
+    setzeAufstellung(z, eigene[Math.floor(rng() * eigene.length)]);
+  }
 }
 
 /** Setzt eine Truppe auf ein eigenes Gebiet. */
@@ -315,7 +350,7 @@ export function verschieben(z: Spielzustand, von: number, nach: number, anzahl: 
 
 /** Schaltet zur nächsten Phase; nach 'verschieben' ist der nächste lebende Spieler am Zug. */
 export function beendePhase(z: Spielzustand): boolean {
-  if (z.sieger !== null || z.eroberung !== null) return false;
+  if (z.sieger !== null || z.eroberung !== null || z.aufstellung > 0) return false;
   if (z.phase === 'verstaerken') {
     if (z.verstaerkung > 0) return false;
     z.phase = 'angreifen';

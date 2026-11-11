@@ -1,9 +1,10 @@
-import { baueKarte, zufallsDefinition, type KartenDefinition } from '../core/karten';
+import { baueKarte, KARTENGROESSEN, zufallsDefinition, type Kartengroesse, type KartenDefinition } from '../core/karten';
 import { siegChance } from '../core/kampf';
 import { kiZug } from '../core/ki';
 import { mulberry32, type Rng } from '../core/rng';
 import {
   angreifen,
+  aufstellungAutomatisch,
   beendePhase,
   CHARAKTER_NAMEN,
   erobern,
@@ -13,6 +14,7 @@ import {
   missionText,
   neuesSpiel,
   PHASE_NAMEN,
+  setzeAufstellung,
   setzeTruppe,
   verbundeneEigene,
   verschieben,
@@ -31,6 +33,8 @@ interface Ui {
   karte: string;
   anzahlKi: number;
   schwierigkeit: Schwierigkeit;
+  kartenGroesse: Kartengroesse;
+  freieAufstellung: boolean;
   z: Spielzustand | null;
   rng: Rng;
   auswahl: number | null;
@@ -46,6 +50,8 @@ const KARTENWAHL = [
   { id: 'zufall', name: 'Zufallskarte', beschreibung: 'Jede Partie eine neue Welt' },
 ];
 
+const GROESSENNAMEN: Record<Kartengroesse, string> = { klein: 'Klein', mittel: 'Mittel', gross: 'Groß' };
+
 const SCHWIERIGKEITEN: { id: Schwierigkeit; name: string }[] = [
   { id: 'lehrling', name: 'Lehrling' },
   { id: 'geselle', name: 'Geselle' },
@@ -56,6 +62,8 @@ const ui: Ui = {
   karte: 'archipel',
   anzahlKi: 2,
   schwierigkeit: 'geselle',
+  kartenGroesse: 'klein',
+  freieAufstellung: false,
   z: null,
   rng: mulberry32(1),
   auswahl: null,
@@ -91,6 +99,20 @@ function renderStart(): string {
       `<button class="chip-btn${ui.schwierigkeit === s.id ? ' an' : ''}" data-aktion="schwer" data-wert="${s.id}">${s.name}</button>`,
   ).join('');
 
+  const groessen = (Object.keys(KARTENGROESSEN) as Kartengroesse[])
+    .map(
+      (g) =>
+        `<button class="chip-btn${ui.kartenGroesse === g ? ' an' : ''}" data-aktion="groesse" data-wert="${g}">${GROESSENNAMEN[g]} · ${KARTENGROESSEN[g]} Gebiete</button>`,
+    )
+    .join('');
+  const groesseAbschnitt =
+    ui.karte === 'zufall'
+      ? `<section><h2>Kartengröße</h2><div class="reihe">${groessen}</div></section>`
+      : '';
+  const aufstellung = `
+      <button class="chip-btn${!ui.freieAufstellung ? ' an' : ''}" data-aktion="aufstellung" data-wert="auto">Automatisch</button>
+      <button class="chip-btn${ui.freieAufstellung ? ' an' : ''}" data-aktion="aufstellung" data-wert="frei">Selbst platzieren</button>`;
+
   return `
     <main class="start">
       <div class="logo">
@@ -98,6 +120,8 @@ function renderStart(): string {
         <p>Erobere die Welt. Würfle mutig.</p>
       </div>
       <section><h2>Karte</h2><div class="optionen">${karten}</div></section>
+      ${groesseAbschnitt}
+      <section><h2>Startaufstellung</h2><div class="reihe">${aufstellung}</div></section>
       <section><h2>Gegner</h2><div class="reihe">${gegner}</div></section>
       <section><h2>Schwierigkeit</h2><div class="reihe">${schwer}</div></section>
       <button class="primaer gross" data-aktion="start">Partie starten</button>
@@ -106,6 +130,7 @@ function renderStart(): string {
         <ul>
           <li><b>Verstärken:</b> Neue Truppen je nach Gebieten und vollständig gehaltenen Kontinenten.</li>
           <li><b>Angreifen:</b> Würfelkampf wie bei Risiko. Die Siegchance siehst du vor jeder Schlacht.</li>
+          <li><b>Aufstellung:</b> Optional darfst du deine Startruppen selbst platzieren.</li>
           <li><b>Verschieben:</b> Einmal pro Zug Truppen über eigene, verbundene Gebiete bewegen.</li>
           <li><b>Meer und Gebirge:</b> Unbetretbar. Gebiete sind nur über Landgrenzen oder gestrichelte Seewege erreichbar.</li>
           <li><b>Sieg:</b> Alle Gegner ausschalten oder deine Missionskarte erfüllen. Missionen zählen ab Runde 4.</li>
@@ -117,6 +142,9 @@ function renderStart(): string {
 function ansichtFuer(z: Spielzustand): KarteAnsicht {
   const leer: KarteAnsicht = { auswahl: null, quellen: [], ziele: [] };
   if (!menschAmZug(z)) return leer;
+  if (z.aufstellung > 0) {
+    return { auswahl: null, quellen: z.karte.gebiete.map((g) => g.id).filter((id) => z.besitz[id] === 0), ziele: [] };
+  }
   const meine = z.karte.gebiete.map((g) => g.id).filter((id) => z.besitz[id] === 0 && z.truppen[id] >= 2);
   if (z.phase === 'angreifen' && !z.eroberung) {
     const ziele =
@@ -133,6 +161,7 @@ function ansichtFuer(z: Spielzustand): KarteAnsicht {
 
 function hinweisText(z: Spielzustand): string {
   if (!menschAmZug(z)) return `${z.spieler[z.aktiver].name} ist am Zug …`;
+  if (z.aufstellung > 0) return `Platziere noch ${z.aufstellung} Startruppen auf deinen Gebieten.`;
   switch (z.phase) {
     case 'verstaerken':
       return z.verstaerkung > 0
@@ -192,7 +221,11 @@ function renderSpiel(z: Spielzustand): string {
       <div class="info">
         <p class="hinweis">${hinweisText(z)}</p>
         <div class="knoepfe">
-          <button class="primaer" data-aktion="weiter" ${weiterGesperrt ? 'disabled' : ''}>${naechster[z.phase]}</button>
+          ${
+            z.aufstellung > 0
+              ? `<button class="primaer" data-aktion="aufstellungAuto">Auto verteilen</button>`
+              : `<button class="primaer" data-aktion="weiter" ${weiterGesperrt ? 'disabled' : ''}>${naechster[z.phase]}</button>`
+          }
           <button data-aktion="chance">Chancen: ${ui.zeigeChance ? 'an' : 'aus'}</button>
           <button data-aktion="menue">Menü</button>
         </div>
@@ -290,13 +323,15 @@ function renderEnde(z: Spielzustand): string {
 }
 
 function kartenDefinition(): KartenDefinition {
-  return ui.karte === 'zufall' ? zufallsDefinition(ui.rng) : VORDEFINIERT[ui.karte];
+  return ui.karte === 'zufall'
+    ? zufallsDefinition(ui.rng, KARTENGROESSEN[ui.kartenGroesse])
+    : VORDEFINIERT[ui.karte];
 }
 
 function starte(): void {
   ui.rng = mulberry32((Math.random() * 2 ** 32) >>> 0);
   const karte = baueKarte(kartenDefinition());
-  ui.z = neuesSpiel(karte, ui.anzahlKi, ui.schwierigkeit, ui.rng);
+  ui.z = neuesSpiel(karte, ui.anzahlKi, ui.schwierigkeit, ui.rng, { freieAufstellung: ui.freieAufstellung });
   ui.auswahl = null;
   ui.modal = null;
   render();
@@ -328,6 +363,11 @@ async function kiWeiter(): Promise<void> {
 function klickFeld(id: number): void {
   const z = ui.z;
   if (!z || !menschAmZug(z) || ui.modal) return;
+
+  if (z.aufstellung > 0) {
+    if (setzeAufstellung(z, id)) render();
+    return;
+  }
 
   if (z.phase === 'verstaerken') {
     if (setzeTruppe(z, id)) render();
@@ -367,6 +407,15 @@ function aktion(name: string, wert: string): void {
       break;
     case 'schwer':
       ui.schwierigkeit = wert as Schwierigkeit;
+      break;
+    case 'groesse':
+      ui.kartenGroesse = wert as Kartengroesse;
+      break;
+    case 'aufstellung':
+      ui.freieAufstellung = wert === 'frei';
+      break;
+    case 'aufstellungAuto':
+      if (z && z.aufstellung > 0) aufstellungAutomatisch(z, ui.rng);
       break;
     case 'start':
       starte();

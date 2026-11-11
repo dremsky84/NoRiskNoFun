@@ -14,6 +14,10 @@ export interface KartenDefinition {
   seewege?: [string, string][];
 }
 
+/** Gebietsanzahl je Kartengröße (gilt für die Zufallskarte). */
+export const KARTENGROESSEN = { klein: 20, mittel: 32, gross: 44 } as const;
+export type Kartengroesse = keyof typeof KARTENGROESSEN;
+
 /** Spielfeld-Koordinaten: 0 bis 1000 in beide Richtungen. */
 export const FELDGROESSE = 1000;
 
@@ -126,7 +130,12 @@ const GEBIETSNAMEN = [
   'Titan', 'Callisto', 'Io', 'Europa', 'Mira', 'Sirius', 'Rigel', 'Antares', 'Deneb', 'Nova',
   'Corona', 'Eclipse', 'Meridian', 'Zephyr', 'Cygnus', 'Draco', 'Perseus', 'Lynx', 'Andromeda',
   'Hydra', 'Phoenix', 'Centaur', 'Pegasus', 'Vulpes', 'Cetus', 'Lupus', 'Ara', 'Norma', 'Pyxis',
+  'Vela', 'Carina', 'Crater', 'Sextans', 'Monoceros', 'Lepus', 'Columba', 'Caelum', 'Fornax',
+  'Hydrus', 'Indus', 'Musca', 'Triangulum', 'Octans', 'Reticulum', 'Mensa', 'Chamaeleon', 'Telescopium',
+  'Apus', 'Pictor', 'Volans', 'Lacerta', 'Vulpecula', 'Sagitta', 'Delphin', 'Equuleus', 'Corvus',
 ];
+
+if (GEBIETSNAMEN.length < KARTENGROESSEN.gross) throw new Error('Zu wenige Gebietsnamen für die größte Kartengröße');
 
 const KONTINENTNAMEN = ['Nordreich', 'Ostmark', 'Südlicht', 'Westfront', 'Zentralband', 'Sternenkamm'];
 
@@ -154,14 +163,19 @@ function platziere(rng: Rng, anzahl: number, minAbstand: number, bestehend: Punk
  */
 export function zufallsDefinition(
   rng: Rng,
-  anzahl = 20,
-  kontinentAnzahl = 4,
-  ozeanAnzahl = 5,
-  gebirgsAnzahl = 3,
+  anzahl: number = KARTENGROESSEN.klein,
+  kontinentAnzahl?: number,
+  ozeanAnzahl?: number,
+  gebirgsAnzahl?: number,
 ): KartenDefinition {
-  const gebietPunkte = platziere(rng, anzahl, 170, []);
-  const ozeanPunkte = platziere(rng, ozeanAnzahl, 130, gebietPunkte);
-  const gebirgsPunkte = platziere(rng, gebirgsAnzahl, 130, [...gebietPunkte, ...ozeanPunkte]);
+  // Bei größeren Karten rücken die Punkte enger zusammen und es gibt mehr Kontinente, Meere und Gebirge.
+  const skala = Math.sqrt(KARTENGROESSEN.klein / anzahl);
+  const kontinente = kontinentAnzahl ?? (anzahl <= 24 ? 4 : anzahl <= 36 ? 5 : 6);
+  const ozeane = ozeanAnzahl ?? Math.round(anzahl / 4);
+  const gebirge = gebirgsAnzahl ?? Math.round(anzahl / 7);
+  const gebietPunkte = platziere(rng, anzahl, 170 * skala, []);
+  const ozeanPunkte = platziere(rng, ozeane, 130 * skala, gebietPunkte);
+  const gebirgsPunkte = platziere(rng, gebirge, 130 * skala, [...gebietPunkte, ...ozeanPunkte]);
   const alle = [...gebietPunkte, ...ozeanPunkte, ...gebirgsPunkte];
 
   // Landgrenzen: Delaunay über alle Punkte, nur Gebiet-Gebiet-Kanten behalten.
@@ -170,7 +184,7 @@ export function zufallsDefinition(
 
   // Startpunkte: einer zufällig, die weiteren jeweils am weitesten entfernt von den bisherigen.
   const seeds = [Math.floor(rng() * anzahl)];
-  while (seeds.length < kontinentAnzahl) {
+  while (seeds.length < kontinente) {
     let beste = -1;
     let besteDistanz = -1;
     for (let i = 0; i < anzahl; i++) {
@@ -189,7 +203,7 @@ export function zufallsDefinition(
   let geaendert = true;
   while (geaendert) {
     geaendert = false;
-    for (let k = 0; k < kontinentAnzahl; k++) {
+    for (let k = 0; k < kontinente; k++) {
       const kandidaten: number[] = [];
       for (let i = 0; i < anzahl; i++) {
         if (kontinent[i] === -1 && land[i].some((j) => kontinent[j] === k)) kandidaten.push(i);
@@ -220,7 +234,7 @@ export function zufallsDefinition(
   const kontinentNamen = mische(KONTINENTNAMEN, rng);
   return {
     name: 'Zufallskarte',
-    kontinente: Array.from({ length: kontinentAnzahl }, (_, k) => ({
+    kontinente: Array.from({ length: kontinente }, (_, k) => ({
       name: kontinentNamen[k],
       bonus: 2 + Math.floor(rng() * 3),
     })),
