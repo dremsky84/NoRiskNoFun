@@ -42,8 +42,8 @@ export function renderKarte(z: Spielzustand, ansicht: KarteAnsicht): string {
     })
     .join('');
 
-  // Skalierung: 1 bei 20 Gebieten, kleiner bei größeren Karten (mindestens 0,55).
-  const skala = Math.max(0.55, Math.min(1, Math.sqrt(20 / z.karte.gebiete.length))).toFixed(3);
+  // Skalierung: 1 bei 20 Gebieten, kleiner bei größeren Karten (mindestens 0,6).
+  const skala = Math.max(0.6, Math.min(1, Math.pow(20 / z.karte.gebiete.length, 0.25))).toFixed(3);
   const gebiete = z.karte.gebiete
     .map((g) => {
       const besitzer = z.besitz[g.id];

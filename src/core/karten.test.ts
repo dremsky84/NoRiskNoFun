@@ -40,7 +40,7 @@ describe('vordefinierte Karten', () => {
     it(`${id}: Gebiete, Ozeane und Gebirge vorhanden, alles erreichbar`, () => {
       const karte = baueKarte(def);
       expect(karte.gebiete.length).toBeGreaterThanOrEqual(20);
-      expect(karte.kontinente.length).toBe(4);
+      expect(karte.kontinente.length).toBeGreaterThanOrEqual(4);
       expect(karte.felder.filter((f) => f.typ === 'ozean').length).toBeGreaterThan(0);
       expect(karte.felder.filter((f) => f.typ === 'gebirge').length).toBeGreaterThan(0);
       pruefeKarte(karte);

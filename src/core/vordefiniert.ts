@@ -73,8 +73,65 @@ export const DREIFACHMEER: KartenDefinition = {
   ],
 };
 
+/** Weltenring: 44 Gebiete rund um ein Binnenmeer. Sechs Kontinente, Meere und Gebirgspässe außen. */
+export const WELTENRING: KartenDefinition = {
+  name: 'Weltenring',
+  kontinente: [
+    { name: 'Nordpol', bonus: 3 },
+    { name: 'Morgenlicht', bonus: 3 },
+    { name: 'Sonnenbogen', bonus: 4 },
+    { name: 'Südkrone', bonus: 4 },
+    { name: 'Abendland', bonus: 4 },
+    { name: 'Tiefenkamm', bonus: 5 },
+  ],
+  gebiete: [
+    g('Aegis', 460, 117, 0), g('Boreas', 436, 212, 0), g('Cirrus', 374, 136, 0), g('Dione', 372, 234, 0),
+    g('Eos', 294, 175, 0), g('Fjord', 315, 270, 0), g('Glacia', 226, 230, 0), g('Halo', 268, 318, 0),
+    g('Ilias', 148, 343, 1), g('Jovia', 217, 417, 1), g('Kairos', 119, 442, 1), g('Lumen', 205, 495, 1),
+    g('Marra', 118, 545, 1), g('Nereus', 214, 573, 1), g('Oriel', 143, 644, 1), g('Pyrrha', 189, 726, 2),
+    g('Qadira', 287, 704, 2), g('Rhea', 259, 801, 2), g('Solis', 348, 753, 2), g('Thalia', 348, 854, 2),
+    g('Umbra', 420, 784, 2), g('Vanta', 446, 881, 2), g('Xenia', 540, 883, 3), g('Yara', 564, 788, 3),
+    g('Zoran', 626, 864, 3), g('Azura', 628, 766, 3), g('Brisa', 706, 825, 3), g('Calyx', 685, 730, 3),
+    g('Delta', 774, 770, 3), g('Echo', 732, 682, 3), g('Fenix', 852, 657, 4), g('Glimmer', 783, 583, 4),
+    g('Haven', 881, 558, 4), g('Iris', 795, 505, 4), g('Jolt', 882, 455, 4), g('Kessel', 786, 427, 4),
+    g('Lyon', 857, 356, 4), g('Morrow', 811, 274, 5), g('Nimbus', 713, 296, 5), g('Orbit', 741, 199, 5),
+    g('Pegel', 652, 247, 5), g('Rift', 652, 146, 5), g('Sable', 580, 216, 5), g('Tundra', 554, 119, 5),
+  ],
+  ozeane: [o(500, 500), o(420, 430), o(590, 600), o(560, 400), o(93, 265), o(93, 735), o(500, 970), o(907, 735), o(907, 265), o(500, 30), o(214, 665), o(786, 665), o(500, 170)],
+  gebirge: [o(214, 335), o(500, 830), o(786, 335)],
+};
+
+/** Sternenmeer: 44 Gebiete auf fünf Inselgruppen, dazwischen Meere und Gebirgsketten. */
+export const STERNENMEER: KartenDefinition = {
+  name: 'Sternenmeer',
+  kontinente: [
+    { name: 'Glutinsel', bonus: 4 },
+    { name: 'Eisinsel', bonus: 4 },
+    { name: 'Dunkelfeld', bonus: 3 },
+    { name: 'Grünwelt', bonus: 5 },
+    { name: 'Silberküste', bonus: 4 },
+  ],
+  gebiete: [
+    g('Ember', 65, 85, 0), g('Flare', 170, 85, 0), g('Gleam', 275, 85, 0), g('Hiber', 65, 190, 0),
+    g('Inferno', 170, 190, 0), g('Kindle', 275, 190, 0), g('Lava', 65, 295, 0), g('Magma', 170, 295, 0),
+    g('Pyre', 275, 295, 0), g('Frost', 421, 75, 1), g('Glacier', 526, 75, 1), g('Hailstorm', 631, 75, 1),
+    g('Icicle', 421, 180, 1), g('Jetstream', 526, 180, 1), g('Krios', 631, 180, 1), g('Lumi', 421, 285, 1),
+    g('Mistral', 526, 285, 1), g('Nevado', 631, 285, 1), g('Umbra', 735, 145, 2), g('Vanta', 840, 145, 2),
+    g('Wraith', 945, 145, 2), g('Xylem', 735, 250, 2), g('Yonder', 945, 250, 2), g('Ashen', 735, 355, 2),
+    g('Basalt', 840, 355, 2), g('Cinder', 945, 355, 2), g('Verdant', 201, 455, 3), g('Bloom', 306, 455, 3),
+    g('Canopy', 411, 455, 3), g('Dew', 201, 560, 3), g('Eden', 306, 560, 3), g('Fern', 411, 560, 3),
+    g('Grove', 201, 665, 3), g('Harvest', 306, 665, 3), g('Ivy', 411, 665, 3), g('Argent', 615, 495, 4),
+    g('Brine', 720, 495, 4), g('Coral', 825, 495, 4), g('Dune', 615, 600, 4), g('Estuary', 720, 600, 4),
+    g('Fathom', 825, 600, 4), g('Gull', 615, 705, 4), g('Harbor', 720, 705, 4), g('Isle', 825, 705, 4),
+  ],
+  ozeane: [o(330, 380), o(680, 400), o(170, 420), o(500, 400), o(840, 430), o(500, 860), o(170, 760), o(680, 820), o(330, 780), o(860, 800)],
+  gebirge: [o(250, 420), o(760, 450), o(520, 720), o(470, 300)],
+};
+
 export const VORDEFINIERT: Record<string, KartenDefinition> = {
   archipel: ARCHIPEL,
   gebirgsbogen: GEBIRGSBOGEN,
   dreifachmeer: DREIFACHMEER,
+  weltenring: WELTENRING,
+  sternenmeer: STERNENMEER,
 };

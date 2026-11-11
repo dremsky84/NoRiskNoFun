@@ -53,7 +53,7 @@ Architektur-Hinweis: Die Spiellogik wird als reine TypeScript-Module ohne Darste
 - **Missionen:** Jeder Spieler erhält zufällig entweder zwei Kontinente oder mindestens die Hälfte der Gebiete als Ziel.
 - **Verschieben:** Einmal pro Zug, nur über verbundene eigene Gebiete, mindestens eine Truppe bleibt zurück.
 - **Kein Zeitlimit.** Die Partie endet mit Sieg, Missionserfüllung oder Ausscheiden aller Gegner.
-- **Kartengröße:** Die Zufallskarte gibt es in drei Größen: klein (20 Gebiete), mittel (32) und groß (44). Startvorrat und Kontinente wachsen mit. Die handgebauten Karten sind bisher alle klein.
+- **Kartengröße:** Die Zufallskarte gibt es in drei Größen: klein (20 Gebiete), mittel (32) und groß (44). Startvorrat und Kontinente wachsen mit. Die handgebauten Karten sind Archipel, Gebirgsbogen und Dreifachmeer (je 20 Gebiete) sowie Weltenring und Sternenmeer (je 44 Gebiete).
 - **Startaufstellung:** Wahlweise automatisch oder selbst platziert. Bei der Selbstaufstellung setzt der Mensch seine Startruppen Klick für Klick, die KI verteilt automatisch.
 - **Missionen:** Ziel mindestens 5 Gebiete über dem Startbesitz. Missionen zählen erst ab Runde 4.
 - **Nicht im Prototyp:** WLAN-Multiplayer und Hot-Seat (beide Phase 2).

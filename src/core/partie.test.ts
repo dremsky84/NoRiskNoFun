@@ -121,6 +121,8 @@ const SZENARIEN: { name: string; karte: () => Karte; ki: number; schwer: Schwier
   { name: 'Archipel, 2 KI, Geselle', karte: () => baueKarte(VORDEFINIERT.archipel), ki: 2, schwer: 'geselle', seed: 101 },
   { name: 'Gebirgsbogen, 3 KI, Meister', karte: () => baueKarte(VORDEFINIERT.gebirgsbogen), ki: 3, schwer: 'meister', seed: 202 },
   { name: 'Dreifachmeer, 2 KI, Lehrling', karte: () => baueKarte(VORDEFINIERT.dreifachmeer), ki: 2, schwer: 'lehrling', seed: 303 },
+  { name: 'Weltenring (44), 3 KI, Geselle', karte: () => baueKarte(VORDEFINIERT.weltenring), ki: 3, schwer: 'geselle', seed: 505 },
+  { name: 'Sternenmeer (44), 2 KI, Meister', karte: () => baueKarte(VORDEFINIERT.sternenmeer), ki: 2, schwer: 'meister', seed: 606 },
   { name: 'Groß (44 Gebiete), 3 KI, Geselle', karte: () => baueKarte(zufallsDefinition(mulberry32(7), KARTENGROESSEN.gross)), ki: 3, schwer: 'geselle', seed: 404 },
 ];
 

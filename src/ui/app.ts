@@ -47,6 +47,8 @@ const KARTENWAHL = [
   { id: 'archipel', name: 'Archipel', beschreibung: 'Festland und Inseln, getrennt durch Meer' },
   { id: 'gebirgsbogen', name: 'Gebirgsbogen', beschreibung: 'Ein Gebirgskamm teilt die Welt' },
   { id: 'dreifachmeer', name: 'Dreifachmeer', beschreibung: 'Drei Meere, viele Seewege' },
+  { id: 'weltenring', name: 'Weltenring', beschreibung: 'Groß · 44 Gebiete rund um ein Binnenmeer' },
+  { id: 'sternenmeer', name: 'Sternenmeer', beschreibung: 'Groß · 44 Gebiete auf fünf Inselgruppen' },
   { id: 'zufall', name: 'Zufallskarte', beschreibung: 'Jede Partie eine neue Welt' },
 ];
 
